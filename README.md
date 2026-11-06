@@ -1,5 +1,7 @@
 # SRP Damage Falloff Lab
 
+**[View live](https://cdstk.github.io/Dregora-Falloff-Visualization/)** · [Repository](https://github.com/cdstk/Dregora-Falloff-Visualization)
+
 An offline, browser-based visualizer for **Scape and Run: Parasites** mob health and
 **hits-to-kill before vs. after damage falloff**, built for the **RLCraft Dregora v1.1.2b**
 config pack.
