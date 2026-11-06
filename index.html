@@ -17,9 +17,9 @@
         <h1>Damage Falloff <span class="accent">Lab</span></h1>
         <p class="lede">Expected mob health and hits-to-kill, before and after the player damage falloff handler.</p>
         <div class="hero-tags" aria-label="Dataset summary">
-          <span class="tag tag-lime" id="heroMobCount">81 mobs</span>
+          <span class="tag tag-lime" id="heroMobCount">… mobs</span>
           <span class="tag">4× max dimension HP</span>
-          <span class="tag">per-mob HP multipliers stacked</span>
+          <span class="tag">matter-list filtered</span>
           <span class="tag">player damage only</span>
         </div>
       </div>
@@ -37,7 +37,9 @@
       <code>SRParasitesMobs.cfg</code>
       <span class="source-plus">+</span>
       <code>srpmixins.cfg</code>
-      <span class="source-note">Only these two config files are parsed.</span>
+      <span class="source-plus">+</span>
+      <code>lang + mobs-that-matter.txt</code>
+      <span class="source-note">Config is source of truth for health; matter list defines in-game scope.</span>
     </section>
 
     <section class="panel controls" aria-label="Visualization controls">
@@ -95,8 +97,8 @@
       </article>
       <article class="stat-card">
         <p class="stat-label">Mobs shown</p>
-        <p class="stat-value" id="statMobs">81</p>
-        <p class="stat-sub" id="statMobsSub">of 81 configured</p>
+        <p class="stat-value" id="statMobs">–</p>
+        <p class="stat-sub" id="statMobsSub">from mobs-that-matter.txt</p>
       </article>
       <article class="stat-card">
         <p class="stat-label">Effective HP range</p>
@@ -194,7 +196,15 @@
       </div>
       <div>
         <p><strong>Dataset</strong></p>
-        <p id="footerMeta">Generated from SRParasitesMobs.cfg + srpmixins.cfg.</p>
+        <p id="footerMeta">Generated from SRParasitesMobs.cfg, srpmixins.cfg, SRP lang, and mobs-that-matter.txt.</p>
+      </div>
+      <div class="footer-disclaimer">
+        <p><strong>Disclaimer</strong></p>
+        <p>
+          This visualization was written with AI assistance. All mob stat data is derived from and verified against the modpack’s
+          configuration files and is intended to reflect in-game values for RLCraft Dregora v1.1.2b. Entries with missing config data
+          are explicitly marked rather than guessed.
+        </p>
       </div>
     </footer>
   </div>

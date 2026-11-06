@@ -1,10 +1,20 @@
 {
-  "generatedAt": "2026-11-06T08:09:40.814Z",
+  "generatedAt": "2026-11-06T23:20:00.476Z",
   "sources": {
     "mobs": "RLCraft Dregora v1.1.2b/overrides/config/srparasites/SRParasitesMobs.cfg",
-    "srpmixins": "RLCraft Dregora v1.1.2b/overrides/config/srpmixins.cfg"
+    "srpmixins": "RLCraft Dregora v1.1.2b/overrides/config/srpmixins.cfg",
+    "lang": "SRParasites-1.12.2v1.9.21/assets/srparasites/lang/en_us.lang",
+    "matterList": "info/mobs-that-matter.txt"
   },
-  "mobCount": 81,
+  "mobCount": 80,
+  "resolvedMobCount": 79,
+  "unresolvedMobCount": 1,
+  "unresolvedMobIds": [
+    "srparasites:carrier_light"
+  ],
+  "warnings": [
+    "srparasites:carrier_light: no config header/section found (config key tried: \"carrier_light\")"
+  ],
   "dimensionMultipliersEnabled": true,
   "dimensionHealthMultipliers": [
     {
@@ -32,11 +42,153 @@
   "maxDimension": 111,
   "mobs": [
     {
+      "id": "srparasites:ada_arachnida",
+      "name": "Adapted Arachnida",
+      "baseHealth": 80,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:arachnida (Adapted: base 35 + additional 45)",
+      "variant": "adapted",
+      "variantBaseHealth": 35,
+      "adaptedAdditionalHealth": 45,
+      "effectiveHealthMax": 320,
+      "effectiveHealthByDimension": {
+        "0": 120,
+        "1": 80,
+        "3": 240,
+        "111": 320,
+        "-1": 80
+      }
+    },
+    {
+      "id": "srparasites:ada_bolster",
+      "name": "Adapted Bolster",
+      "baseHealth": 105,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:bolster (Adapted: base 35 + additional 70)",
+      "variant": "adapted",
+      "variantBaseHealth": 35,
+      "adaptedAdditionalHealth": 70,
+      "effectiveHealthMax": 420,
+      "effectiveHealthByDimension": {
+        "0": 157.5,
+        "1": 105,
+        "3": 315,
+        "111": 420,
+        "-1": 105
+      }
+    },
+    {
+      "id": "srparasites:ada_longarms",
+      "name": "Adapted Longarms",
+      "baseHealth": 95,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:longarms (Adapted: base 45 + additional 50)",
+      "variant": "adapted",
+      "variantBaseHealth": 45,
+      "adaptedAdditionalHealth": 50,
+      "effectiveHealthMax": 380,
+      "effectiveHealthByDimension": {
+        "0": 142.5,
+        "1": 95,
+        "3": 285,
+        "111": 380,
+        "-1": 95
+      }
+    },
+    {
+      "id": "srparasites:ada_manducater",
+      "name": "Adapted Manducater",
+      "baseHealth": 45,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:manducater (Adapted: base 30 + additional 15)",
+      "variant": "adapted",
+      "variantBaseHealth": 30,
+      "adaptedAdditionalHealth": 15,
+      "effectiveHealthMax": 180,
+      "effectiveHealthByDimension": {
+        "0": 67.5,
+        "1": 45,
+        "3": 135,
+        "111": 180,
+        "-1": 45
+      }
+    },
+    {
+      "id": "srparasites:ada_reeker",
+      "name": "Adapted Reeker",
+      "baseHealth": 90,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:reeker (Adapted: base 40 + additional 50)",
+      "variant": "adapted",
+      "variantBaseHealth": 40,
+      "adaptedAdditionalHealth": 50,
+      "effectiveHealthMax": 360,
+      "effectiveHealthByDimension": {
+        "0": 135,
+        "1": 90,
+        "3": 270,
+        "111": 360,
+        "-1": 90
+      }
+    },
+    {
+      "id": "srparasites:ada_summoner",
+      "name": "Adapted Summoner",
+      "baseHealth": 100,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:summoner (Adapted: base 40 + additional 60)",
+      "variant": "adapted",
+      "variantBaseHealth": 40,
+      "adaptedAdditionalHealth": 60,
+      "effectiveHealthMax": 400,
+      "effectiveHealthByDimension": {
+        "0": 150,
+        "1": 100,
+        "3": 300,
+        "111": 400,
+        "-1": 100
+      }
+    },
+    {
+      "id": "srparasites:ada_yelloweye",
+      "name": "Adapted Yelloweye",
+      "baseHealth": 55,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:yelloweye (Adapted: base 30 + additional 25)",
+      "variant": "adapted",
+      "variantBaseHealth": 30,
+      "adaptedAdditionalHealth": 25,
+      "effectiveHealthMax": 220,
+      "effectiveHealthByDimension": {
+        "0": 82.5,
+        "1": 55,
+        "3": 165,
+        "111": 220,
+        "-1": 55
+      }
+    },
+    {
       "id": "srparasites:anc_dreadnaut",
       "name": "Ancient Dreadnaut",
       "baseHealth": 200,
       "healthMultiplier": 2,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:anc_dreadnaut",
       "effectiveHealthMax": 1600,
       "effectiveHealthByDimension": {
         "0": 600,
@@ -52,6 +204,8 @@
       "baseHealth": 250,
       "healthMultiplier": 2,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:anc_overlord",
       "effectiveHealthMax": 2000,
       "effectiveHealthByDimension": {
         "0": 750,
@@ -62,41 +216,13 @@
       }
     },
     {
-      "id": "srparasites:anc_pod",
-      "name": "Droppod",
-      "baseHealth": 10,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 40,
-      "effectiveHealthByDimension": {
-        "0": 15,
-        "1": 10,
-        "3": 30,
-        "111": 40,
-        "-1": 10
-      }
-    },
-    {
-      "id": "srparasites:arachnida",
-      "name": "Arachnida",
-      "baseHealth": 35,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 140,
-      "effectiveHealthByDimension": {
-        "0": 52.5,
-        "1": 35,
-        "3": 105,
-        "111": 140,
-        "-1": 35
-      }
-    },
-    {
-      "id": "srparasites:beckon_i",
+      "id": "srparasites:beckon_si",
       "name": "Beckon Stage I",
       "baseHealth": 25,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:beckon_i",
       "effectiveHealthMax": 100,
       "effectiveHealthByDimension": {
         "0": 37.5,
@@ -107,11 +233,13 @@
       }
     },
     {
-      "id": "srparasites:beckon_ii",
+      "id": "srparasites:beckon_sii",
       "name": "Beckon Stage II",
       "baseHealth": 60,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:beckon_ii",
       "effectiveHealthMax": 240,
       "effectiveHealthByDimension": {
         "0": 90,
@@ -122,11 +250,13 @@
       }
     },
     {
-      "id": "srparasites:beckon_iii",
+      "id": "srparasites:beckon_siii",
       "name": "Beckon Stage III",
       "baseHealth": 110,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:beckon_iii",
       "effectiveHealthMax": 440,
       "effectiveHealthByDimension": {
         "0": 165,
@@ -137,11 +267,13 @@
       }
     },
     {
-      "id": "srparasites:beckon_iv",
+      "id": "srparasites:beckon_siv",
       "name": "Beckon Stage IV",
       "baseHealth": 220,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:beckon_iv",
       "effectiveHealthMax": 880,
       "effectiveHealthByDimension": {
         "0": 330,
@@ -157,6 +289,8 @@
       "baseHealth": 310,
       "healthMultiplier": 0.6,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:bogle",
       "effectiveHealthMax": 744,
       "effectiveHealthByDimension": {
         "0": 279,
@@ -167,26 +301,13 @@
       }
     },
     {
-      "id": "srparasites:bolster",
-      "name": "Bolster",
-      "baseHealth": 35,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 140,
-      "effectiveHealthByDimension": {
-        "0": 52.5,
-        "1": 35,
-        "3": 105,
-        "111": 140,
-        "-1": 35
-      }
-    },
-    {
       "id": "srparasites:bomber_heavy",
       "name": "Heavy Bomber",
       "baseHealth": 420,
       "healthMultiplier": 0.6,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:bomber_heavy",
       "effectiveHealthMax": 1008,
       "effectiveHealthByDimension": {
         "0": 378,
@@ -202,6 +323,8 @@
       "baseHealth": 75,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:bomber_light",
       "effectiveHealthMax": 300,
       "effectiveHealthByDimension": {
         "0": 112.5,
@@ -217,6 +340,8 @@
       "baseHealth": 7,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:buglin",
       "effectiveHealthMax": 28,
       "effectiveHealthByDimension": {
         "0": 10.5,
@@ -232,6 +357,8 @@
       "baseHealth": 390,
       "healthMultiplier": 0.45,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:carrier_colony",
       "effectiveHealthMax": 702,
       "effectiveHealthByDimension": {
         "0": 263.25,
@@ -247,6 +374,8 @@
       "baseHealth": 20,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:carrier_flying",
       "effectiveHealthMax": 80,
       "effectiveHealthByDimension": {
         "0": 30,
@@ -262,6 +391,8 @@
       "baseHealth": 30,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:carrier_heavy",
       "effectiveHealthMax": 120,
       "effectiveHealthByDimension": {
         "0": 45,
@@ -272,11 +403,30 @@
       }
     },
     {
-      "id": "srparasites:cruxa",
+      "id": "srparasites:carrier_light",
+      "name": "Light Carrier",
+      "baseHealth": null,
+      "healthMultiplier": null,
+      "enabled": null,
+      "statsResolved": false,
+      "unresolvedReason": "Missing config stats (tried section \"carrier_light\")",
+      "effectiveHealthMax": null,
+      "effectiveHealthByDimension": {
+        "0": null,
+        "1": null,
+        "3": null,
+        "111": null,
+        "-1": null
+      }
+    },
+    {
+      "id": "srparasites:crux",
       "name": "Crux",
       "baseHealth": 70,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:cruxa",
       "effectiveHealthMax": 280,
       "effectiveHealthByDimension": {
         "0": 105,
@@ -287,26 +437,13 @@
       }
     },
     {
-      "id": "srparasites:devourer",
-      "name": "Devourer",
-      "baseHealth": 60,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 240,
-      "effectiveHealthByDimension": {
-        "0": 90,
-        "1": 60,
-        "3": 180,
-        "111": 240,
-        "-1": 60
-      }
-    },
-    {
       "id": "srparasites:dispatcher_si",
       "name": "Dispatcher Stage I",
       "baseHealth": 33,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:dispatcher_si",
       "effectiveHealthMax": 132,
       "effectiveHealthByDimension": {
         "0": 49.5,
@@ -322,6 +459,8 @@
       "baseHealth": 70,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:dispatcher_sii",
       "effectiveHealthMax": 280,
       "effectiveHealthByDimension": {
         "0": 105,
@@ -337,6 +476,8 @@
       "baseHealth": 130,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:dispatcher_siii",
       "effectiveHealthMax": 520,
       "effectiveHealthByDimension": {
         "0": 195,
@@ -352,6 +493,8 @@
       "baseHealth": 250,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:dispatcher_siv",
       "effectiveHealthMax": 1000,
       "effectiveHealthByDimension": {
         "0": 375,
@@ -362,26 +505,13 @@
       }
     },
     {
-      "id": "srparasites:draconite",
-      "name": "Draconite",
-      "baseHealth": 666,
-      "healthMultiplier": 0.4,
-      "enabled": true,
-      "effectiveHealthMax": 1065.6000000000001,
-      "effectiveHealthByDimension": {
-        "0": 399.6,
-        "1": 266.40000000000003,
-        "3": 799.2,
-        "111": 1065.6000000000001,
-        "-1": 266.40000000000003
-      }
-    },
-    {
       "id": "srparasites:fer_bear",
       "name": "Feral Bear",
       "baseHealth": 38,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_bear",
       "effectiveHealthMax": 152,
       "effectiveHealthByDimension": {
         "0": 57,
@@ -397,6 +527,8 @@
       "baseHealth": 38,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_cow",
       "effectiveHealthMax": 152,
       "effectiveHealthByDimension": {
         "0": 57,
@@ -412,6 +544,8 @@
       "baseHealth": 80,
       "healthMultiplier": 0.9,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_enderman",
       "effectiveHealthMax": 288,
       "effectiveHealthByDimension": {
         "0": 108,
@@ -427,6 +561,8 @@
       "baseHealth": 37,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_horse",
       "effectiveHealthMax": 148,
       "effectiveHealthByDimension": {
         "0": 55.5,
@@ -442,6 +578,8 @@
       "baseHealth": 24,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_human",
       "effectiveHealthMax": 96,
       "effectiveHealthByDimension": {
         "0": 36,
@@ -457,6 +595,8 @@
       "baseHealth": 16,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_pig",
       "effectiveHealthMax": 64,
       "effectiveHealthByDimension": {
         "0": 24,
@@ -472,6 +612,8 @@
       "baseHealth": 21,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_sheep",
       "effectiveHealthMax": 84,
       "effectiveHealthByDimension": {
         "0": 31.5,
@@ -487,6 +629,8 @@
       "baseHealth": 27,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_villager",
       "effectiveHealthMax": 108,
       "effectiveHealthByDimension": {
         "0": 40.5,
@@ -502,6 +646,8 @@
       "baseHealth": 16,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:fer_wolf",
       "effectiveHealthMax": 64,
       "effectiveHealthByDimension": {
         "0": 24,
@@ -517,6 +663,8 @@
       "baseHealth": 5,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:gnat",
       "effectiveHealthMax": 20,
       "effectiveHealthByDimension": {
         "0": 7.5,
@@ -532,6 +680,8 @@
       "baseHealth": 20,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:grunt",
       "effectiveHealthMax": 80,
       "effectiveHealthByDimension": {
         "0": 30,
@@ -547,6 +697,8 @@
       "baseHealth": 360,
       "healthMultiplier": 0.45,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:haunter",
       "effectiveHealthMax": 648,
       "effectiveHealthByDimension": {
         "0": 243,
@@ -562,6 +714,8 @@
       "baseHealth": 50,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:heed",
       "effectiveHealthMax": 200,
       "effectiveHealthByDimension": {
         "0": 75,
@@ -572,41 +726,13 @@
       }
     },
     {
-      "id": "srparasites:herd",
-      "name": "Herd",
-      "baseHealth": 140,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 560,
-      "effectiveHealthByDimension": {
-        "0": 210,
-        "1": 140,
-        "3": 420,
-        "111": 560,
-        "-1": 140
-      }
-    },
-    {
-      "id": "srparasites:hi_blaze",
-      "name": "Hijacked Blaze",
-      "baseHealth": 15,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 60,
-      "effectiveHealthByDimension": {
-        "0": 22.5,
-        "1": 15,
-        "3": 45,
-        "111": 60,
-        "-1": 15
-      }
-    },
-    {
       "id": "srparasites:hi_golem",
       "name": "Hijacked Golem",
       "baseHealth": 150,
       "healthMultiplier": 2,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:hi_golem",
       "effectiveHealthMax": 1200,
       "effectiveHealthByDimension": {
         "0": 450,
@@ -617,26 +743,13 @@
       }
     },
     {
-      "id": "srparasites:hi_skeleton",
-      "name": "Hijacked Skeleton",
-      "baseHealth": 15,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 60,
-      "effectiveHealthByDimension": {
-        "0": 22.5,
-        "1": 15,
-        "3": 45,
-        "111": 60,
-        "-1": 15
-      }
-    },
-    {
       "id": "srparasites:host",
       "name": "Host",
       "baseHealth": 50,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:host",
       "effectiveHealthMax": 200,
       "effectiveHealthByDimension": {
         "0": 75,
@@ -647,11 +760,30 @@
       }
     },
     {
-      "id": "srparasites:inhoom",
-      "name": "Incomplete Form (Medium)",
+      "id": "srparasites:hostii",
+      "name": "Herd",
+      "baseHealth": 140,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:herd",
+      "effectiveHealthMax": 560,
+      "effectiveHealthByDimension": {
+        "0": 210,
+        "1": 140,
+        "3": 420,
+        "111": 560,
+        "-1": 140
+      }
+    },
+    {
+      "id": "srparasites:incompleteform_medium",
+      "name": "Incomplete Form",
       "baseHealth": 14,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:inhoom",
       "effectiveHealthMax": 56,
       "effectiveHealthByDimension": {
         "0": 21,
@@ -662,11 +794,13 @@
       }
     },
     {
-      "id": "srparasites:inhoos",
-      "name": "Incomplete Form (Small)",
+      "id": "srparasites:incompleteform_small",
+      "name": "Incomplete Form",
       "baseHealth": 9,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:inhoos",
       "effectiveHealthMax": 36,
       "effectiveHealthByDimension": {
         "0": 13.5,
@@ -682,6 +816,8 @@
       "baseHealth": 50,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:kyphosis",
       "effectiveHealthMax": 200,
       "effectiveHealthByDimension": {
         "0": 75,
@@ -692,41 +828,13 @@
       }
     },
     {
-      "id": "srparasites:longarms",
-      "name": "Longarms",
-      "baseHealth": 45,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 180,
-      "effectiveHealthByDimension": {
-        "0": 67.5,
-        "1": 45,
-        "3": 135,
-        "111": 180,
-        "-1": 45
-      }
-    },
-    {
-      "id": "srparasites:manducater",
-      "name": "Manducater",
-      "baseHealth": 30,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 120,
-      "effectiveHealthByDimension": {
-        "0": 45,
-        "1": 30,
-        "3": 90,
-        "111": 120,
-        "-1": 30
-      }
-    },
-    {
       "id": "srparasites:mangler",
       "name": "Mangler",
       "baseHealth": 17,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:mangler",
       "effectiveHealthMax": 68,
       "effectiveHealthByDimension": {
         "0": 25.5,
@@ -742,6 +850,8 @@
       "baseHealth": 120,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:marauder",
       "effectiveHealthMax": 480,
       "effectiveHealthByDimension": {
         "0": 180,
@@ -757,6 +867,8 @@
       "baseHealth": 75,
       "healthMultiplier": 1.1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:monarch",
       "effectiveHealthMax": 330,
       "effectiveHealthByDimension": {
         "0": 123.75,
@@ -772,6 +884,8 @@
       "baseHealth": 80,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:overseer",
       "effectiveHealthMax": 320,
       "effectiveHealthByDimension": {
         "0": 120,
@@ -782,11 +896,104 @@
       }
     },
     {
-      "id": "srparasites:reeker",
-      "name": "Reeker",
+      "id": "srparasites:pri_arachnida",
+      "name": "Primitive Arachnida",
+      "baseHealth": 35,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:arachnida (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 140,
+      "effectiveHealthByDimension": {
+        "0": 52.5,
+        "1": 35,
+        "3": 105,
+        "111": 140,
+        "-1": 35
+      }
+    },
+    {
+      "id": "srparasites:pri_bolster",
+      "name": "Primitive Bolster",
+      "baseHealth": 35,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:bolster (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 140,
+      "effectiveHealthByDimension": {
+        "0": 52.5,
+        "1": 35,
+        "3": 105,
+        "111": 140,
+        "-1": 35
+      }
+    },
+    {
+      "id": "srparasites:pri_devourer",
+      "name": "Primitive Devourer",
+      "baseHealth": 60,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:devourer (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 240,
+      "effectiveHealthByDimension": {
+        "0": 90,
+        "1": 60,
+        "3": 180,
+        "111": 240,
+        "-1": 60
+      }
+    },
+    {
+      "id": "srparasites:pri_longarms",
+      "name": "Primitive Longarms",
+      "baseHealth": 45,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:longarms (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 180,
+      "effectiveHealthByDimension": {
+        "0": 67.5,
+        "1": 45,
+        "3": 135,
+        "111": 180,
+        "-1": 45
+      }
+    },
+    {
+      "id": "srparasites:pri_manducater",
+      "name": "Primitive Manducater",
+      "baseHealth": 30,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:manducater (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 120,
+      "effectiveHealthByDimension": {
+        "0": 45,
+        "1": 30,
+        "3": 90,
+        "111": 120,
+        "-1": 30
+      }
+    },
+    {
+      "id": "srparasites:pri_reeker",
+      "name": "Primitive Reeker",
       "baseHealth": 40,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:reeker (Primitive)",
+      "variant": "primitive",
       "effectiveHealthMax": 160,
       "effectiveHealthByDimension": {
         "0": 60,
@@ -797,63 +1004,75 @@
       }
     },
     {
-      "id": "srparasites:rooter_si",
-      "name": "Rooter Stage I",
-      "baseHealth": 33,
+      "id": "srparasites:pri_summoner",
+      "name": "Primitive Summoner",
+      "baseHealth": 40,
       "healthMultiplier": 1,
       "enabled": true,
-      "effectiveHealthMax": 132,
+      "statsResolved": true,
+      "configSource": "srparasites:summoner (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 160,
       "effectiveHealthByDimension": {
-        "0": 49.5,
-        "1": 33,
-        "3": 99,
-        "111": 132,
-        "-1": 33
+        "0": 60,
+        "1": 40,
+        "3": 120,
+        "111": 160,
+        "-1": 40
       }
     },
     {
-      "id": "srparasites:rooter_sii",
-      "name": "Rooter Stage II",
-      "baseHealth": 70,
+      "id": "srparasites:pri_tozoon",
+      "name": "Primitive Tozoon",
+      "baseHealth": 45,
       "healthMultiplier": 1,
       "enabled": true,
-      "effectiveHealthMax": 280,
+      "statsResolved": true,
+      "configSource": "srparasites:tozoon (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 180,
       "effectiveHealthByDimension": {
-        "0": 105,
-        "1": 70,
-        "3": 210,
-        "111": 280,
-        "-1": 70
+        "0": 67.5,
+        "1": 45,
+        "3": 135,
+        "111": 180,
+        "-1": 45
       }
     },
     {
-      "id": "srparasites:rooter_siii",
-      "name": "Rooter Stage III",
-      "baseHealth": 130,
+      "id": "srparasites:pri_vermin",
+      "name": "Primitive Vermin",
+      "baseHealth": 45,
       "healthMultiplier": 1,
       "enabled": true,
-      "effectiveHealthMax": 520,
+      "statsResolved": true,
+      "configSource": "srparasites:vermin (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 180,
       "effectiveHealthByDimension": {
-        "0": 195,
-        "1": 130,
-        "3": 390,
-        "111": 520,
-        "-1": 130
+        "0": 67.5,
+        "1": 45,
+        "3": 135,
+        "111": 180,
+        "-1": 45
       }
     },
     {
-      "id": "srparasites:rooter_siv",
-      "name": "Rooter Stage IV",
-      "baseHealth": 250,
+      "id": "srparasites:pri_yelloweye",
+      "name": "Primitive Yelloweye",
+      "baseHealth": 30,
       "healthMultiplier": 1,
       "enabled": true,
-      "effectiveHealthMax": 1000,
+      "statsResolved": true,
+      "configSource": "srparasites:yelloweye (Primitive)",
+      "variant": "primitive",
+      "effectiveHealthMax": 120,
       "effectiveHealthByDimension": {
-        "0": 375,
-        "1": 250,
-        "3": 750,
-        "111": 1000,
-        "-1": 250
+        "0": 45,
+        "1": 30,
+        "3": 90,
+        "111": 120,
+        "-1": 30
       }
     },
     {
@@ -862,6 +1081,8 @@
       "baseHealth": 10,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:rupter",
       "effectiveHealthMax": 40,
       "effectiveHealthByDimension": {
         "0": 15,
@@ -877,6 +1098,8 @@
       "baseHealth": 15,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:seizer",
       "effectiveHealthMax": 60,
       "effectiveHealthByDimension": {
         "0": 22.5,
@@ -892,6 +1115,8 @@
       "baseHealth": 30,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sentry",
       "effectiveHealthMax": 120,
       "effectiveHealthByDimension": {
         "0": 45,
@@ -907,6 +1132,8 @@
       "baseHealth": 15,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_adventurer",
       "effectiveHealthMax": 60,
       "effectiveHealthByDimension": {
         "0": 22.5,
@@ -922,6 +1149,8 @@
       "baseHealth": 40,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_bear",
       "effectiveHealthMax": 160,
       "effectiveHealthByDimension": {
         "0": 60,
@@ -933,10 +1162,12 @@
     },
     {
       "id": "srparasites:sim_bigspider",
-      "name": "Big Spider",
+      "name": "Assimilated Big Spider",
       "baseHealth": 22,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_bigspider",
       "effectiveHealthMax": 88,
       "effectiveHealthByDimension": {
         "0": 33,
@@ -952,6 +1183,8 @@
       "baseHealth": 18,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_cow",
       "effectiveHealthMax": 72,
       "effectiveHealthByDimension": {
         "0": 27,
@@ -967,6 +1200,8 @@
       "baseHealth": 260,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_dragone",
       "effectiveHealthMax": 1040,
       "effectiveHealthByDimension": {
         "0": 390,
@@ -982,6 +1217,8 @@
       "baseHealth": 55,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_enderman",
       "effectiveHealthMax": 220,
       "effectiveHealthByDimension": {
         "0": 82.5,
@@ -997,6 +1234,8 @@
       "baseHealth": 24,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_horse",
       "effectiveHealthMax": 96,
       "effectiveHealthByDimension": {
         "0": 36,
@@ -1012,6 +1251,8 @@
       "baseHealth": 15,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_human",
       "effectiveHealthMax": 60,
       "effectiveHealthByDimension": {
         "0": 22.5,
@@ -1027,6 +1268,8 @@
       "baseHealth": 9,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_pig",
       "effectiveHealthMax": 36,
       "effectiveHealthByDimension": {
         "0": 13.5,
@@ -1042,6 +1285,8 @@
       "baseHealth": 13,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_sheep",
       "effectiveHealthMax": 52,
       "effectiveHealthByDimension": {
         "0": 19.5,
@@ -1057,6 +1302,8 @@
       "baseHealth": 15,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_squid",
       "effectiveHealthMax": 60,
       "effectiveHealthByDimension": {
         "0": 22.5,
@@ -1072,6 +1319,8 @@
       "baseHealth": 16,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_villager",
       "effectiveHealthMax": 64,
       "effectiveHealthByDimension": {
         "0": 24,
@@ -1087,6 +1336,8 @@
       "baseHealth": 10,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:sim_wolf",
       "effectiveHealthMax": 40,
       "effectiveHealthByDimension": {
         "0": 15,
@@ -1102,6 +1353,8 @@
       "baseHealth": 85,
       "healthMultiplier": 0.25,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:succor",
       "effectiveHealthMax": 85,
       "effectiveHealthByDimension": {
         "0": 31.875,
@@ -1112,26 +1365,13 @@
       }
     },
     {
-      "id": "srparasites:summoner",
-      "name": "Summoner",
-      "baseHealth": 40,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 160,
-      "effectiveHealthByDimension": {
-        "0": 60,
-        "1": 40,
-        "3": 120,
-        "111": 160,
-        "-1": 40
-      }
-    },
-    {
       "id": "srparasites:thrall",
       "name": "Thrall",
       "baseHealth": 40,
       "healthMultiplier": 1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:thrall",
       "effectiveHealthMax": 160,
       "effectiveHealthByDimension": {
         "0": 60,
@@ -1139,36 +1379,6 @@
         "3": 120,
         "111": 160,
         "-1": 40
-      }
-    },
-    {
-      "id": "srparasites:tozoon",
-      "name": "Tozoon",
-      "baseHealth": 45,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 180,
-      "effectiveHealthByDimension": {
-        "0": 67.5,
-        "1": 45,
-        "3": 135,
-        "111": 180,
-        "-1": 45
-      }
-    },
-    {
-      "id": "srparasites:vermin",
-      "name": "Vermin",
-      "baseHealth": 45,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 180,
-      "effectiveHealthByDimension": {
-        "0": 67.5,
-        "1": 45,
-        "3": 135,
-        "111": 180,
-        "-1": 45
       }
     },
     {
@@ -1177,6 +1387,8 @@
       "baseHealth": 70,
       "healthMultiplier": 1.2,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:vigilante",
       "effectiveHealthMax": 336,
       "effectiveHealthByDimension": {
         "0": 126,
@@ -1192,6 +1404,8 @@
       "baseHealth": 80,
       "healthMultiplier": 1.1,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:warden",
       "effectiveHealthMax": 352,
       "effectiveHealthByDimension": {
         "0": 132,
@@ -1202,26 +1416,13 @@
       }
     },
     {
-      "id": "srparasites:worker",
-      "name": "Worker",
-      "baseHealth": 10,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 40,
-      "effectiveHealthByDimension": {
-        "0": 15,
-        "1": 10,
-        "3": 30,
-        "111": 40,
-        "-1": 10
-      }
-    },
-    {
       "id": "srparasites:wraith",
       "name": "Wraith",
       "baseHealth": 310,
       "healthMultiplier": 0.6,
       "enabled": true,
+      "statsResolved": true,
+      "configSource": "srparasites:wraith",
       "effectiveHealthMax": 744,
       "effectiveHealthByDimension": {
         "0": 279,
@@ -1229,21 +1430,6 @@
         "3": 558,
         "111": 744,
         "-1": 186
-      }
-    },
-    {
-      "id": "srparasites:yelloweye",
-      "name": "Yelloweye",
-      "baseHealth": 30,
-      "healthMultiplier": 1,
-      "enabled": true,
-      "effectiveHealthMax": 120,
-      "effectiveHealthByDimension": {
-        "0": 45,
-        "1": 30,
-        "3": 90,
-        "111": 120,
-        "-1": 30
       }
     }
   ]

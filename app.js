@@ -222,9 +222,22 @@
     return cell;
   }
 
+  function isResolved(mob) {
+    return mob && mob.statsResolved !== false && mob.effectiveHealthMax != null;
+  }
+
   function getRows() {
     const damageAfter = afterFalloff(state.damage);
     return mobs.map((mob) => {
+      if (!isResolved(mob)) {
+        return {
+          ...mob,
+          hitsBefore: null,
+          hitsAfter: null,
+          extraHits: null,
+          percentIncrease: null,
+        };
+      }
       const hitsBefore = hitsToKill(mob.effectiveHealthMax, state.damage);
       const hitsAfter = hitsToKill(mob.effectiveHealthMax, damageAfter);
       const extraHits = hitsAfter - hitsBefore;
@@ -256,7 +269,14 @@
         return a.name.localeCompare(b.name);
       }
 
-      const difference = (a[key] ?? 0) - (b[key] ?? 0);
+      const av = a[key];
+      const bv = b[key];
+      const aNull = av == null;
+      const bNull = bv == null;
+      if (aNull && bNull) return a.name.localeCompare(b.name);
+      if (aNull) return 1;
+      if (bNull) return -1;
+      const difference = av - bv;
       if (difference !== 0) return difference * direction;
       return a.name.localeCompare(b.name);
     });
@@ -308,30 +328,34 @@
   function renderStats(rows) {
     const damageAfter = afterFalloff(state.damage);
     const reduction = reductionPercent(state.damage);
+    const resolvedRows = rows.filter(isResolved);
+    const unresolvedCount = rows.length - resolvedRows.length;
 
     el.statDamage.textContent = `${formatNumber(state.damage, 0)} → ${formatNumber(damageAfter)}`;
     el.statDamageSub.textContent =
       reduction <= 0 ? "no reduction at this damage" : `${formatPercent(reduction)} reduction`;
 
     el.statMobs.textContent = formatNumber(rows.length, 0);
-    el.statMobsSub.textContent = `of ${formatNumber(mobs.length, 0)} configured`;
+    el.statMobsSub.textContent = `of ${formatNumber(mobs.length, 0)} in matter list${unresolvedCount ? ` · ${unresolvedCount} unresolved` : ""}`;
 
-    if (rows.length > 0) {
-      const healthValues = rows.map((row) => row.effectiveHealthMax);
+    if (resolvedRows.length > 0) {
+      const healthValues = resolvedRows.map((row) => row.effectiveHealthMax);
       el.statHpRange.textContent = `${formatNumber(Math.min(...healthValues))} – ${formatNumber(Math.max(...healthValues))}`;
     } else {
       el.statHpRange.textContent = "–";
     }
 
-    const totalBefore = rows.reduce((sum, row) => sum + row.hitsBefore, 0);
-    const totalAfter = rows.reduce((sum, row) => sum + row.hitsAfter, 0);
+    const totalBefore = resolvedRows.reduce((sum, row) => sum + row.hitsBefore, 0);
+    const totalAfter = resolvedRows.reduce((sum, row) => sum + row.hitsAfter, 0);
     const extraHits = totalAfter - totalBefore;
 
     el.statExtraHits.textContent = formatSigned(extraHits, 0);
-    el.statExtraHitsSub.textContent = `${formatNumber(totalBefore, 0)} before → ${formatNumber(totalAfter, 0)} after`;
+    el.statExtraHitsSub.textContent = unresolvedCount
+      ? `${formatNumber(totalBefore, 0)} before → ${formatNumber(totalAfter, 0)} after · excludes ${unresolvedCount} unresolved`
+      : `${formatNumber(totalBefore, 0)} before → ${formatNumber(totalAfter, 0)} after`;
 
     if (rows.length > 0) {
-      el.tableSummary.textContent = `${formatNumber(rows.length, 0)} mob${rows.length === 1 ? "" : "s"} at ${formatNumber(state.damage, 0)} pre-falloff damage · ${formatNumber(totalBefore, 0)} → ${formatNumber(totalAfter, 0)} total hits`;
+      el.tableSummary.textContent = `${formatNumber(rows.length, 0)} mob${rows.length === 1 ? "" : "s"} at ${formatNumber(state.damage, 0)} pre-falloff damage · ${formatNumber(totalBefore, 0)} → ${formatNumber(totalAfter, 0)} total hits${unresolvedCount ? ` · ${unresolvedCount} missing config stats` : ""}`;
     } else {
       el.tableSummary.textContent = "No mobs match the current search.";
     }
@@ -345,31 +369,45 @@
       tr.dataset.id = row.id;
       tr.tabIndex = 0;
       if (row.id === state.selectedId) tr.classList.add("is-selected");
+      if (!isResolved(row)) tr.classList.add("is-unresolved");
 
-      tr.appendChild(tableCell("mob-name", row.name));
+      const nameCell = tableCell("mob-name", row.name);
+      if (!isResolved(row)) {
+        const badge = createEl("span", "unresolved-badge", "Missing config");
+        badge.title = row.unresolvedReason || "Missing config stats";
+        nameCell.appendChild(document.createTextNode(" "));
+        nameCell.appendChild(badge);
+      }
+      tr.appendChild(nameCell);
       tr.appendChild(tableCell("mob-id", row.id));
-      tr.appendChild(tableCell("num", formatNumber(row.baseHealth)));
-      tr.appendChild(tableCell("num", formatMultiplier(row.healthMultiplier)));
-      tr.appendChild(tableCell("num hp-cell", formatNumber(row.effectiveHealthMax)));
-      tr.appendChild(tableCell("num", formatNumber(row.hitsBefore, 0)));
-      tr.appendChild(
-        tableCell(
-          row.extraHits > 0 ? "num after-cell" : "num",
-          formatNumber(row.hitsAfter, 0)
-        )
-      );
-      tr.appendChild(
-        tableCell(
-          row.extraHits > 0 ? "num extra-positive" : "num",
-          formatSigned(row.extraHits, 0)
-        )
-      );
-      tr.appendChild(
-        tableCell(
-          row.percentIncrease > 0 ? "num percent-positive" : "num",
-          formatPercent(row.percentIncrease)
-        )
-      );
+      if (!isResolved(row)) {
+        const unresolved = tableCell("num unresolved-cell", "—");
+        unresolved.title = row.unresolvedReason || "Missing config stats";
+        for (let i = 0; i < 7; i++) tr.appendChild(unresolved.cloneNode(true));
+      } else {
+        tr.appendChild(tableCell("num", formatNumber(row.baseHealth)));
+        tr.appendChild(tableCell("num", formatMultiplier(row.healthMultiplier)));
+        tr.appendChild(tableCell("num hp-cell", formatNumber(row.effectiveHealthMax)));
+        tr.appendChild(tableCell("num", formatNumber(row.hitsBefore, 0)));
+        tr.appendChild(
+          tableCell(
+            row.extraHits > 0 ? "num after-cell" : "num",
+            formatNumber(row.hitsAfter, 0)
+          )
+        );
+        tr.appendChild(
+          tableCell(
+            row.extraHits > 0 ? "num extra-positive" : "num",
+            formatSigned(row.extraHits, 0)
+          )
+        );
+        tr.appendChild(
+          tableCell(
+            row.percentIncrease > 0 ? "num percent-positive" : "num",
+            formatPercent(row.percentIncrease)
+          )
+        );
+      }
 
       tr.addEventListener("click", () => selectMob(row.id));
       tr.addEventListener("keydown", (event) => {
@@ -598,12 +636,13 @@
 
   function renderBarChart(rows) {
     const metric = state.barMetric;
-    const sorted = [...rows]
+    const resolvedRows = rows.filter(isResolved);
+    const sorted = [...resolvedRows]
       .sort((a, b) => b[metric] - a[metric] || a.name.localeCompare(b.name))
       .slice(0, TOP_BAR_COUNT);
 
     if (sorted.length === 0) {
-      el.barChart.innerHTML = '<p class="chart-empty">No mobs match the current search.</p>';
+      el.barChart.innerHTML = '<p class="chart-empty">No mobs with resolved config stats match the current search.</p>';
       return;
     }
 
@@ -906,6 +945,19 @@
     header.appendChild(closeButton);
     fragment.appendChild(header);
 
+    if (!isResolved(mob)) {
+      const notice = createEl("div", "unresolved-notice");
+      notice.appendChild(createEl("strong", null, "Missing config stats"));
+      notice.appendChild(createEl("p", null, mob.unresolvedReason || "This mob is in mobs-that-matter.txt, but no matching health data was found in the parsed SRP config."));
+      fragment.appendChild(notice);
+      if (mob.configSource) {
+        const src = createEl("p", "detail-id", `Config source: ${mob.configSource}`);
+        fragment.appendChild(src);
+      }
+      el.detailPanel.replaceChildren(fragment);
+      return;
+    }
+
     const breakdown = createEl("div", "breakdown");
     breakdown.appendChild(detailChip("Base HP", formatNumber(mob.baseHealth)));
     breakdown.appendChild(createEl("span", "breakdown-op", "×"));
@@ -975,6 +1027,8 @@
       "name",
       "base_health",
       "health_multiplier",
+      "stats_resolved",
+      "unresolved_reason",
       "effective_health_max",
       ...dimensionsList.map((dimension) => `effective_health_dim_${dimension}`),
       "pre_falloff_damage",
@@ -990,14 +1044,16 @@
       row.name,
       row.baseHealth,
       row.healthMultiplier,
+      row.statsResolved !== false,
+      row.unresolvedReason ?? "",
       row.effectiveHealthMax,
-      ...dimensionsList.map((dimension) => row.effectiveHealthByDimension[String(dimension)]),
+      ...dimensionsList.map((dimension) => row.effectiveHealthByDimension ? row.effectiveHealthByDimension[String(dimension)] : ""),
       state.damage,
       Number(damageAfter.toFixed(4)),
       row.hitsBefore,
       row.hitsAfter,
       row.extraHits,
-      Number(row.percentIncrease.toFixed(2)),
+      row.percentIncrease != null ? Number(row.percentIncrease.toFixed(2)) : "",
     ]);
 
     const csv = [header, ...dataRows]
@@ -1184,7 +1240,9 @@
     el.barMetric.value = state.barMetric;
 
     const generatedDate = new Date(DATA.generatedAt);
-    el.footerMeta.textContent = `Generated ${generatedDate.toLocaleString("en-US")} · ${formatNumber(mobs.length, 0)} mobs · max dimension ${maxDimension} at ${formatMultiplier(maxDimensionMultiplier)}.`;
+    const unresolvedCount = typeof DATA.unresolvedMobCount === "number" ? DATA.unresolvedMobCount : mobs.filter((m) => m.statsResolved === false).length;
+    const unresolvedNote = unresolvedCount ? ` · ${unresolvedCount} unresolved (missing config stats)` : "";
+    el.footerMeta.textContent = `Generated ${generatedDate.toLocaleString("en-US")} · ${formatNumber(mobs.length, 0)} mobs${unresolvedNote} · max dimension ${maxDimension} at ${formatMultiplier(maxDimensionMultiplier)}.`;
 
     updateRangeFill();
     syncSortControls();

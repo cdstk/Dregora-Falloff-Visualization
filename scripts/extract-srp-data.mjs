@@ -20,22 +20,34 @@ const MIXINS_CONFIG = path.join(
   "config",
   "srpmixins.cfg"
 );
+const LANG_FILE = path.join(
+  projectRoot,
+  "SRParasites-1.12.2v1.9.21",
+  "assets",
+  "srparasites",
+  "lang",
+  "en_us.lang"
+);
+const MATTER_FILE = path.join(projectRoot, "info", "mobs-that-matter.txt");
 
 const OUTPUT_JSON = path.join(projectRoot, "data", "srp-mobs.json");
 const OUTPUT_CSV = path.join(projectRoot, "data", "srp-mobs.csv");
 const OUTPUT_JS = path.join(projectRoot, "data", "srp-data.js");
 
-const EXPECTED_MOB_COUNT = 81;
 const EXPECTED_MAX_DIMENSION_MULTIPLIER = 4;
 const EPSILON = 1e-9;
 
-const SANITY_SAMPLES = [
-  { id: "srparasites:anc_dreadnaut", baseHealth: 200, healthMultiplier: 2, effectiveHealthMax: 1600 },
-  { id: "srparasites:anc_overlord", baseHealth: 250, healthMultiplier: 2, effectiveHealthMax: 2000 },
-  { id: "srparasites:bogle", baseHealth: 310, healthMultiplier: 0.6, effectiveHealthMax: 744 },
-  { id: "srparasites:draconite", baseHealth: 666, healthMultiplier: 0.4, effectiveHealthMax: 1065.6 },
-  { id: "srparasites:succor", baseHealth: 85, healthMultiplier: 0.25, effectiveHealthMax: 85 },
-];
+// Config section/header IDs differ from in-game entity IDs for a few mobs in SRP 1.9.21 / this pack.
+const CONFIG_ID_MAP = {
+  beckon_si: "beckon_i",
+  beckon_sii: "beckon_ii",
+  beckon_siii: "beckon_iii",
+  beckon_siv: "beckon_iv",
+  crux: "cruxa",
+  hostii: "herd",
+  incompleteform_medium: "inhoom",
+  incompleteform_small: "inhoos",
+};
 
 function fail(message) {
   throw new Error(message);
@@ -49,10 +61,8 @@ function closeEnough(a, b) {
   return Math.abs(a - b) <= EPSILON;
 }
 
-function readConfig(filePath) {
-  if (!fs.existsSync(filePath)) {
-    fail(`Config file not found: ${filePath}`);
-  }
+function readText(filePath, label = "File") {
+  if (!fs.existsSync(filePath)) fail(`${label} not found: ${filePath}`);
   return fs.readFileSync(filePath, "utf8");
 }
 
@@ -116,70 +126,184 @@ function parseDimensionHealthMultipliers(mixinsText) {
   };
 }
 
-function parseMobs(mobsText) {
+function parseLang(langText) {
+  const names = new Map();
+  for (const rawLine of langText.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const prefix = "entity.srparasites.";
+    const suffix = ".name=";
+    if (!line.startsWith(prefix) || !line.includes(suffix)) continue;
+    const eq = line.indexOf(suffix);
+    const shortId = line.slice(prefix.length, eq);
+    const name = line.slice(eq + suffix.length).trim();
+    if (shortId && name) names.set(shortId, name);
+  }
+  return names;
+}
+
+function parseMatterList(matterText) {
+  const ids = [];
+  const seen = new Set();
+  for (const match of matterText.matchAll(/srparasites:([a-z0-9_]+)/g)) {
+    const shortId = match[1];
+    if (seen.has(shortId)) continue;
+    seen.add(shortId);
+    ids.push(shortId);
+  }
+  assert(ids.length > 0, "mobs-that-matter.txt did not yield any srparasites entity IDs");
+  return ids;
+}
+
+function parseConfigHeaders(mobsText) {
   const headerRegex =
     /^# (srparasites:[a-z0-9_]+)[ \t]*\n#-+[^\n]*\n# ([^\n]*?)[ \t]*\n#\s+Base Health:\s*([0-9.]+)/gm;
-
-  const headerMatches = [...mobsText.matchAll(headerRegex)];
-  assert(
-    headerMatches.length === EXPECTED_MOB_COUNT,
-    `Expected ${EXPECTED_MOB_COUNT} mob header blocks in SRParasitesMobs.cfg, found ${headerMatches.length}`
-  );
-
-  const sectionRegex = /^"(srparasites:[a-z0-9_]+)"\s*\{/gm;
-  const sections = new Map();
-  for (const match of mobsText.matchAll(sectionRegex)) {
-    const id = match[1];
-    const start = match.index;
-    const bodyStart = start + match[0].length;
-    sections.set(id, { start: bodyStart });
-  }
-
-  const sortedSectionStarts = [...sections.values()]
-    .map((section) => section.start)
-    .sort((a, b) => a - b);
-
-  const mobs = [];
-  const seenIds = new Set();
-
-  for (const match of headerMatches) {
-    const id = match[1];
+  const headers = new Map();
+  for (const match of mobsText.matchAll(headerRegex)) {
+    const fullId = match[1];
+    const shortId = fullId.replace("srparasites:", "");
     const name = match[2].trim();
     const baseHealth = Number(match[3]);
+    assert(name.length > 0, `Mob ${fullId} has an empty display name`);
+    assert(Number.isFinite(baseHealth) && baseHealth > 0, `Mob ${fullId} has invalid base health: ${match[3]}`);
+    assert(!headers.has(shortId), `Duplicate mob header: ${fullId}`);
+    headers.set(shortId, { shortId, fullId, headerName: name, baseHealth });
+  }
+  return headers;
+}
 
-    assert(!seenIds.has(id), `Duplicate mob id: ${id}`);
-    seenIds.add(id);
+function parseConfigSections(mobsText) {
+  const sections = new Map();
+  const sectionRegex = /^"(srparasites:[a-z0-9_]+)"\s*\{/gm;
+  for (const match of mobsText.matchAll(sectionRegex)) {
+    sections.set(match[1].replace("srparasites:", ""), { start: match.index + match[0].length });
+  }
+  const starts = [...sections.values()].map((s) => s.start).sort((a, b) => a - b);
+  for (const [shortId, section] of sections) {
+    const nextStart = starts.find((start) => start > section.start);
+    section.body = mobsText.slice(section.start, nextStart ?? mobsText.length);
+  }
+  return sections;
+}
 
-    assert(name.length > 0, `Mob ${id} has an empty display name`);
-    assert(Number.isFinite(baseHealth) && baseHealth > 0, `Mob ${id} has invalid base health: ${match[3]}`);
+function findMultiplier(body, patterns, context) {
+  for (const pattern of patterns) {
+    const match = body.match(pattern);
+    if (match) {
+      const value = Number(match[1]);
+      assert(Number.isFinite(value) && value > 0, `${context} has invalid value: ${match[1]}`);
+      return value;
+    }
+  }
+  return null;
+}
 
-    const section = sections.get(id);
-    assert(section, `Found a header for ${id} but no matching config section`);
+function resolveMob(shortId, { headers, sections, langNames, warnings }) {
+  const fullId = `srparasites:${shortId}`;
+  const name = langNames.get(shortId) ?? null;
+  const isVariant = shortId.startsWith("pri_") || shortId.startsWith("ada_");
 
-    const nextStart = sortedSectionStarts.find((start) => start > section.start);
-    const body = mobsText.slice(section.start, nextStart ?? mobsText.length);
+  if (isVariant) {
+    const prefix = shortId.startsWith("pri_") ? "pri" : "ada";
+    const baseKey = shortId.slice(prefix.length + 1);
+    const header = headers.get(baseKey);
+    const section = sections.get(baseKey);
+    if (!header || !section) {
+      warnings.push(`${fullId}: missing config section/header for base "${baseKey}" (variant unresolved)`);
+      return unresolvedMob(fullId, name ?? shortId, `Missing config base section "${baseKey}" for ${prefix} variant`);
+    }
 
-    const multiplierMatch = body.match(/Health Multiplier"=([0-9.]+)/);
-    assert(multiplierMatch, `Could not find a Health Multiplier for ${id}`);
-    const healthMultiplier = Number(multiplierMatch[1]);
-    assert(
-      Number.isFinite(healthMultiplier) && healthMultiplier > 0,
-      `Mob ${id} has invalid health multiplier: ${multiplierMatch[1]}`
+    const displayName = name ?? (prefix === "pri" ? `Primitive ${header.headerName}` : `Adapted ${header.headerName}`);
+    if (prefix === "pri") {
+      const healthMultiplier = findMultiplier(
+        section.body,
+        [/Primitive [^"]*?Health Multiplier"=([0-9.]+)/, /Health Multiplier"=([0-9.]+)/],
+        `${fullId} primitive health multiplier`
+      );
+      if (healthMultiplier == null) {
+        warnings.push(`${fullId}: could not find Primitive Health Multiplier in section "${baseKey}"`);
+        return unresolvedMob(fullId, displayName, `Missing Primitive Health Multiplier in config section "${baseKey}"`);
+      }
+      return {
+        id: fullId,
+        name: displayName,
+        baseHealth: header.baseHealth,
+        healthMultiplier,
+        enabled: parseEnabled(section.body),
+        statsResolved: true,
+        configSource: `srparasites:${baseKey} (Primitive)`,
+        variant: "primitive",
+      };
+    }
+
+    const additionalHealth = findMultiplier(
+      section.body,
+      [/Stage Adapted additional Health"=([0-9.]+)/, /Adapted [^"]*?additional Health"=([0-9.]+)/],
+      `${fullId} adapted additional health`
     );
-
-    const enabledMatch = body.match(/Enabled"=(true|false)/);
-    const enabled = enabledMatch ? enabledMatch[1] === "true" : true;
-
-    mobs.push({
-      id,
-      name,
-      baseHealth,
-      healthMultiplier,
-      enabled,
-    });
+    if (additionalHealth == null) {
+      warnings.push(`${fullId}: could not find Stage Adapted additional Health in section "${baseKey}"`);
+      return unresolvedMob(fullId, displayName, `Missing Stage Adapted additional Health in config section "${baseKey}"`);
+    }
+    const effectiveBase = header.baseHealth + additionalHealth;
+    return {
+      id: fullId,
+      name: displayName,
+      baseHealth: effectiveBase,
+      healthMultiplier: 1,
+      enabled: parseEnabled(section.body),
+      statsResolved: true,
+      configSource: `srparasites:${baseKey} (Adapted: base ${header.baseHealth} + additional ${additionalHealth})`,
+      variant: "adapted",
+      variantBaseHealth: header.baseHealth,
+      adaptedAdditionalHealth: additionalHealth,
+    };
   }
 
-  return mobs;
+  const configKey = CONFIG_ID_MAP[shortId] ?? shortId;
+  const header = headers.get(configKey);
+  const section = sections.get(configKey);
+  if (!header || !section) {
+    warnings.push(`${fullId}: no config header/section found (config key tried: "${configKey}")`);
+    return unresolvedMob(fullId, name ?? shortId, `Missing config stats (tried section "${configKey}")`);
+  }
+
+  const healthMultiplier = findMultiplier(
+    section.body,
+    [/Health Multiplier"=([0-9.]+)/],
+    `${fullId} health multiplier`
+  );
+  if (healthMultiplier == null) {
+    warnings.push(`${fullId}: could not find Health Multiplier in section "${configKey}"`);
+    return unresolvedMob(fullId, name ?? header.headerName, `Missing Health Multiplier in config section "${configKey}"`);
+  }
+
+  return {
+    id: fullId,
+    name: name ?? header.headerName,
+    baseHealth: header.baseHealth,
+    healthMultiplier,
+    enabled: parseEnabled(section.body),
+    statsResolved: true,
+    configSource: `srparasites:${configKey}`,
+  };
+}
+
+function parseEnabled(body) {
+  const match = body.match(/\bEnabled"=(true|false)/);
+  return match ? match[1] === "true" : true;
+}
+
+function unresolvedMob(id, name, reason) {
+  return {
+    id,
+    name,
+    baseHealth: null,
+    healthMultiplier: null,
+    enabled: null,
+    statsResolved: false,
+    unresolvedReason: reason,
+  };
 }
 
 function computeEffectiveHealth(mobs, dimensionHealthMultipliers) {
@@ -189,11 +313,19 @@ function computeEffectiveHealth(mobs, dimensionHealthMultipliers) {
   assert(maxDimension, `No dimension with a ${EXPECTED_MAX_DIMENSION_MULTIPLIER}x health multiplier was found`);
 
   return mobs.map((mob) => {
+    if (!mob.statsResolved || mob.baseHealth == null || mob.healthMultiplier == null) {
+      return {
+        ...mob,
+        effectiveHealthMax: null,
+        effectiveHealthByDimension: Object.fromEntries(
+          dimensionHealthMultipliers.map(({ dimension }) => [String(dimension), null])
+        ),
+      };
+    }
     const effectiveHealthByDimension = {};
     for (const { dimension, multiplier } of dimensionHealthMultipliers) {
       effectiveHealthByDimension[String(dimension)] = mob.baseHealth * mob.healthMultiplier * multiplier;
     }
-
     return {
       ...mob,
       effectiveHealthMax: mob.baseHealth * mob.healthMultiplier * maxDimension.multiplier,
@@ -202,33 +334,10 @@ function computeEffectiveHealth(mobs, dimensionHealthMultipliers) {
   });
 }
 
-function validateSamples(mobs) {
-  const byId = new Map(mobs.map((mob) => [mob.id, mob]));
-
-  for (const sample of SANITY_SAMPLES) {
-    const mob = byId.get(sample.id);
-    assert(mob, `Sanity check failed: ${sample.id} was not parsed`);
-
-    const values = [
-      ["base health", mob.baseHealth, sample.baseHealth],
-      ["health multiplier", mob.healthMultiplier, sample.healthMultiplier],
-      ["effective max health", mob.effectiveHealthMax, sample.effectiveHealthMax],
-    ];
-
-    for (const [label, actual, expected] of values) {
-      assert(
-        closeEnough(actual, expected),
-        `Sanity check failed for ${sample.id}: expected ${label} ${expected}, found ${actual}`
-      );
-    }
-  }
-}
-
 function escapeCsv(value) {
+  if (value == null) return "";
   const text = String(value);
-  if (/[",\r\n]/.test(text)) {
-    return `"${text.replaceAll('"', '""')}"`;
-  }
+  if (/[",\r\n]/.test(text)) return `"${text.replaceAll('"', '""')}"`;
   return text;
 }
 
@@ -245,6 +354,8 @@ function writeCsv(data) {
     "base_health",
     "health_multiplier",
     "enabled",
+    "stats_resolved",
+    "unresolved_reason",
     "effective_health_max",
     ...dimensions.map((dimension) => `effective_health_dim_${dimension}`),
   ];
@@ -255,6 +366,8 @@ function writeCsv(data) {
     mob.baseHealth,
     mob.healthMultiplier,
     mob.enabled,
+    mob.statsResolved,
+    mob.unresolvedReason ?? "",
     mob.effectiveHealthMax,
     ...dimensions.map((dimension) => mob.effectiveHealthByDimension[String(dimension)]),
   ]);
@@ -271,16 +384,26 @@ function writeJs(data) {
 }
 
 function main() {
-  const mobsText = readConfig(MOBS_CONFIG);
-  const mixinsText = readConfig(MIXINS_CONFIG);
+  const mobsText = readText(MOBS_CONFIG, "Config file");
+  const mixinsText = readText(MIXINS_CONFIG, "Config file");
+  const langText = readText(LANG_FILE, "Lang file");
+  const matterText = readText(MATTER_FILE, "Matter list");
 
   const { dimensionMultipliersEnabled, dimensionHealthMultipliers, maxDimensionMultiplier } =
     parseDimensionHealthMultipliers(mixinsText);
+  const langNames = parseLang(langText);
+  const matterIds = parseMatterList(matterText);
+  const headers = parseConfigHeaders(mobsText);
+  const sections = parseConfigSections(mobsText);
 
-  const parsedMobs = parseMobs(mobsText);
-  const mobs = computeEffectiveHealth(parsedMobs, dimensionHealthMultipliers);
-  validateSamples(mobs);
+  const warnings = [];
+  const resolvedMobs = [];
+  for (const shortId of matterIds) {
+    resolvedMobs.push(resolveMob(shortId, { headers, sections, langNames, warnings }));
+  }
+  const mobs = computeEffectiveHealth(resolvedMobs, dimensionHealthMultipliers);
 
+  const unresolved = mobs.filter((mob) => !mob.statsResolved);
   const maxDimension = dimensionHealthMultipliers.find((entry) =>
     closeEnough(entry.multiplier, maxDimensionMultiplier)
   );
@@ -290,8 +413,14 @@ function main() {
     sources: {
       mobs: relative(MOBS_CONFIG),
       srpmixins: relative(MIXINS_CONFIG),
+      lang: relative(LANG_FILE),
+      matterList: relative(MATTER_FILE),
     },
     mobCount: mobs.length,
+    resolvedMobCount: mobs.length - unresolved.length,
+    unresolvedMobCount: unresolved.length,
+    unresolvedMobIds: unresolved.map((mob) => mob.id),
+    warnings,
     dimensionMultipliersEnabled,
     dimensionHealthMultipliers,
     maxDimensionMultiplier,
@@ -303,21 +432,30 @@ function main() {
   writeCsv(data);
   writeJs(data);
 
-  const maxHpMob = mobs.reduce((best, mob) =>
-    mob.effectiveHealthMax > best.effectiveHealthMax ? mob : best
-  );
-  const minHpMob = mobs.reduce((best, mob) =>
-    mob.effectiveHealthMax < best.effectiveHealthMax ? mob : best
-  );
+  const resolved = mobs.filter((mob) => mob.statsResolved && mob.effectiveHealthMax != null);
+  if (resolved.length > 0) {
+    const maxHpMob = resolved.reduce((best, mob) =>
+      mob.effectiveHealthMax > best.effectiveHealthMax ? mob : best
+    );
+    const minHpMob = resolved.reduce((best, mob) =>
+      mob.effectiveHealthMax < best.effectiveHealthMax ? mob : best
+    );
+    console.log(`Highest max HP: ${maxHpMob.name} (${maxHpMob.id}) = ${maxHpMob.effectiveHealthMax} HP`);
+    console.log(`Lowest max HP: ${minHpMob.name} (${minHpMob.id}) = ${minHpMob.effectiveHealthMax} HP`);
+  }
 
-  console.log(`Extracted ${mobs.length} SRP mobs from 2 config files.`);
+  console.log(`Extracted ${mobs.length} mobs from ${relative(MATTER_FILE)} (resolved: ${data.resolvedMobCount}, unresolved: ${data.unresolvedMobCount}).`);
+  if (unresolved.length > 0) {
+    console.warn(`Unresolved mobs (missing config stats): ${unresolved.map((m) => m.id).join(", ")}`);
+  }
+  if (warnings.length > 0) {
+    console.warn(`Warnings:\n- ${warnings.join("\n- ")}`);
+  }
   console.log(
     `Dimension HP multipliers: ${dimensionHealthMultipliers
       .map((entry) => `${entry.dimension}=${entry.multiplier}x`)
       .join(", ")}`
   );
-  console.log(`Highest max HP: ${maxHpMob.name} (${maxHpMob.id}) = ${maxHpMob.effectiveHealthMax} HP`);
-  console.log(`Lowest max HP: ${minHpMob.name} (${minHpMob.id}) = ${minHpMob.effectiveHealthMax} HP`);
   console.log(`Wrote ${relative(OUTPUT_JSON)}`);
   console.log(`Wrote ${relative(OUTPUT_CSV)}`);
   console.log(`Wrote ${relative(OUTPUT_JS)}`);
