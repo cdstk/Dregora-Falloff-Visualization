@@ -1,0 +1,9 @@
+{
+  "srparasites:carrier_light": {
+    "baseHealth": 30,
+    "healthMultiplier": 1,
+    "enabled": true,
+    "reason": "manual override (missing config section)",
+    "source": "manual-override"
+  }
+}

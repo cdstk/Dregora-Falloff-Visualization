@@ -19,7 +19,7 @@ srparasites:buglin,Buglin,7,1,true,true,,28,7,10.5,7,21,28
 srparasites:carrier_colony,Colony Carrier,390,0.45,true,true,,702,175.5,263.25,175.5,526.5,702
 srparasites:carrier_flying,Flying Carrier,20,1,true,true,,80,20,30,20,60,80
 srparasites:carrier_heavy,Heavy Carrier,30,1,true,true,,120,30,45,30,90,120
-srparasites:carrier_light,Light Carrier,,,,false,"Missing config stats (tried section ""carrier_light"")",,,,,,
+srparasites:carrier_light,Light Carrier,30,1,true,true,,120,30,45,30,90,120
 srparasites:crux,Crux,70,1,true,true,,280,70,105,70,210,280
 srparasites:dispatcher_si,Dispatcher Stage I,33,1,true,true,,132,33,49.5,33,99,132
 srparasites:dispatcher_sii,Dispatcher Stage II,70,1,true,true,,280,70,105,70,210,280

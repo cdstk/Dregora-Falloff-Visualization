@@ -35,8 +35,33 @@ or:
 node scripts/extract-srp-data.mjs
 ```
 
-This rewrites the three files in `data/` and prints the parsed mob count, resolved/unresolved
+This rewrites the generated files in `data/` and prints the parsed mob count, resolved/unresolved
 counts, warnings, dimension multipliers, and highest/lowest effective-HP mobs.
+
+`npm run extract` **resets manual overrides** in `data/mob-overrides.json` by default and regenerates
+from config (use `--keep-overrides` to preserve them):
+
+### Fix a missing/unresolved mob entry
+
+For a mob in `info/mobs-that-matter.txt` that has no resolvable config stats, you can add a
+manual override (saved to `data/mob-overrides.json`) and regenerate the dataset. This clears the
+“missing config” warning/marker for that entry:
+
+```powershell
+npm run set-mob -- carrier_light --base-health 30 --health-multiplier 1 --reason "manual override (missing config section)"
+```
+
+or:
+
+```powershell
+node scripts/set-mob-override.mjs carrier_light --base-health 30 --health-multiplier 1 --reason "manual override (missing config section)"
+```
+
+Options: `--base-health <n>` (required unless `--remove`), `--health-multiplier <n>` (default `1`),
+`--name "..."`, `--enabled true|false`, `--reason "..."`, `--no-extract`, `--remove`. The mob ID
+may be `carrier_light` or `srparasites:carrier_light`. `npm run set-mob` re-runs extraction with
+`--keep-overrides` so the override is applied. A plain `npm run extract` clears overrides and
+rebuilds from config.
 
 ---
 
@@ -165,7 +190,8 @@ hit counts rather than fractional estimates.
 - **Adjust the falloff formula:** edit `divisor` / `afterFalloff` in `app.js` and the formula
   card in `index.html`.
 - **Add mobs to scope:** update `info/mobs-that-matter.txt`, then run `npm run extract`.
-- **Fix unresolved outliers:** add/correct config mapping or variant handling in
-  `scripts/extract-srp-data.mjs` (config-first), then regenerate.
+- **Fix unresolved outliers:** use `npm run set-mob -- <mob_id> --base-health <n> [--health-multiplier <n>]` for
+  one-off/post fixes, or add/correct config mapping/variant handling in `scripts/extract-srp-data.mjs`
+  (config-first), then regenerate.
 - **Change the target modpack:** update the config/lang/matter-list paths in
   `scripts/extract-srp-data.mjs` and regenerate.

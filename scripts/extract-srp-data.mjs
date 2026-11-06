@@ -29,6 +29,7 @@ const LANG_FILE = path.join(
   "en_us.lang"
 );
 const MATTER_FILE = path.join(projectRoot, "info", "mobs-that-matter.txt");
+const OVERRIDES_FILE = path.join(projectRoot, "data", "mob-overrides.json");
 
 const OUTPUT_JSON = path.join(projectRoot, "data", "srp-mobs.json");
 const OUTPUT_CSV = path.join(projectRoot, "data", "srp-mobs.csv");
@@ -155,6 +156,35 @@ function parseMatterList(matterText) {
   return ids;
 }
 
+function parseOverrides(filePath, { ignore = false } = {}) {
+  if (ignore || !fs.existsSync(filePath)) return new Map();
+  let raw;
+  try {
+    raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch (e) {
+    fail(`Could not parse mob overrides (${filePath}): ${e instanceof Error ? e.message : String(e)}`);
+  }
+  assert(raw && typeof raw === "object" && !Array.isArray(raw), "mob-overrides.json must be a JSON object keyed by mob id");
+  const overrides = new Map();
+  for (const [key, value] of Object.entries(raw)) {
+    const fullId = key.startsWith("srparasites:") ? key : `srparasites:${key}`;
+    assert(value && typeof value === "object" && !Array.isArray(value), `Override ${fullId} must be an object`);
+    const baseHealth = Number(value.baseHealth);
+    const healthMultiplier = value.healthMultiplier == null ? 1 : Number(value.healthMultiplier);
+    assert(Number.isFinite(baseHealth) && baseHealth > 0, `Override ${fullId} has invalid baseHealth`);
+    assert(Number.isFinite(healthMultiplier) && healthMultiplier > 0, `Override ${fullId} has invalid healthMultiplier`);
+    overrides.set(fullId, {
+      baseHealth,
+      healthMultiplier,
+      enabled: typeof value.enabled === "boolean" ? value.enabled : true,
+      name: typeof value.name === "string" && value.name.trim() ? value.name.trim() : null,
+      reason: typeof value.reason === "string" && value.reason.trim() ? value.reason.trim() : null,
+      source: typeof value.source === "string" && value.source.trim() ? value.source.trim() : "manual-override",
+    });
+  }
+  return overrides;
+}
+
 function parseConfigHeaders(mobsText) {
   const headerRegex =
     /^# (srparasites:[a-z0-9_]+)[ \t]*\n#-+[^\n]*\n# ([^\n]*?)[ \t]*\n#\s+Base Health:\s*([0-9.]+)/gm;
@@ -198,8 +228,24 @@ function findMultiplier(body, patterns, context) {
   return null;
 }
 
-function resolveMob(shortId, { headers, sections, langNames, warnings }) {
+function resolveMob(shortId, { headers, sections, langNames, warnings, overrides }) {
   const fullId = `srparasites:${shortId}`;
+  const override = overrides?.get(fullId);
+  if (override) {
+    return {
+      id: fullId,
+      name: override.name ?? langNames.get(shortId) ?? shortId,
+      baseHealth: override.baseHealth,
+      healthMultiplier: override.healthMultiplier,
+      enabled: override.enabled,
+      statsResolved: true,
+      configSource: `${relative(OVERRIDES_FILE)}${override.reason ? ` (${override.reason})` : ""}`,
+      override: true,
+      overrideReason: override.reason ?? undefined,
+      overrideSource: override.source,
+    };
+  }
+
   const name = langNames.get(shortId) ?? null;
   const isVariant = shortId.startsWith("pri_") || shortId.startsWith("ada_");
 
@@ -384,10 +430,17 @@ function writeJs(data) {
 }
 
 function main() {
+  const keepOverrides = process.argv.includes("--keep-overrides");
+  const resetOverrides = !keepOverrides; // regenerate resets manual overrides by default
   const mobsText = readText(MOBS_CONFIG, "Config file");
   const mixinsText = readText(MIXINS_CONFIG, "Config file");
   const langText = readText(LANG_FILE, "Lang file");
   const matterText = readText(MATTER_FILE, "Matter list");
+  const overrides = parseOverrides(OVERRIDES_FILE, { ignore: resetOverrides });
+  if (resetOverrides && fs.existsSync(OVERRIDES_FILE)) {
+    fs.rmSync(OVERRIDES_FILE);
+    console.log(`Reset overrides: removed ${relative(OVERRIDES_FILE)}`);
+  }
 
   const { dimensionMultipliersEnabled, dimensionHealthMultipliers, maxDimensionMultiplier } =
     parseDimensionHealthMultipliers(mixinsText);
@@ -399,11 +452,12 @@ function main() {
   const warnings = [];
   const resolvedMobs = [];
   for (const shortId of matterIds) {
-    resolvedMobs.push(resolveMob(shortId, { headers, sections, langNames, warnings }));
+    resolvedMobs.push(resolveMob(shortId, { headers, sections, langNames, warnings, overrides }));
   }
   const mobs = computeEffectiveHealth(resolvedMobs, dimensionHealthMultipliers);
 
   const unresolved = mobs.filter((mob) => !mob.statsResolved);
+  const overriddenCount = mobs.filter((mob) => mob.override).length;
   const maxDimension = dimensionHealthMultipliers.find((entry) =>
     closeEnough(entry.multiplier, maxDimensionMultiplier)
   );
@@ -415,11 +469,14 @@ function main() {
       srpmixins: relative(MIXINS_CONFIG),
       lang: relative(LANG_FILE),
       matterList: relative(MATTER_FILE),
+      ...(overrides.size ? { overrides: relative(OVERRIDES_FILE) } : {}),
     },
     mobCount: mobs.length,
     resolvedMobCount: mobs.length - unresolved.length,
     unresolvedMobCount: unresolved.length,
     unresolvedMobIds: unresolved.map((mob) => mob.id),
+    overriddenMobCount: overriddenCount,
+    overriddenMobIds: mobs.filter((mob) => mob.override).map((mob) => mob.id),
     warnings,
     dimensionMultipliersEnabled,
     dimensionHealthMultipliers,
@@ -444,7 +501,7 @@ function main() {
     console.log(`Lowest max HP: ${minHpMob.name} (${minHpMob.id}) = ${minHpMob.effectiveHealthMax} HP`);
   }
 
-  console.log(`Extracted ${mobs.length} mobs from ${relative(MATTER_FILE)} (resolved: ${data.resolvedMobCount}, unresolved: ${data.unresolvedMobCount}).`);
+  console.log(`Extracted ${mobs.length} mobs from ${relative(MATTER_FILE)} (resolved: ${data.resolvedMobCount}, unresolved: ${data.unresolvedMobCount}, overrides: ${data.overriddenMobCount}).`);
   if (unresolved.length > 0) {
     console.warn(`Unresolved mobs (missing config stats): ${unresolved.map((m) => m.id).join(", ")}`);
   }

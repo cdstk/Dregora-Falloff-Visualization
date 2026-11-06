@@ -1,20 +1,21 @@
 {
-  "generatedAt": "2026-11-06T23:20:00.476Z",
+  "generatedAt": "2026-11-07T00:05:23.043Z",
   "sources": {
     "mobs": "RLCraft Dregora v1.1.2b/overrides/config/srparasites/SRParasitesMobs.cfg",
     "srpmixins": "RLCraft Dregora v1.1.2b/overrides/config/srpmixins.cfg",
     "lang": "SRParasites-1.12.2v1.9.21/assets/srparasites/lang/en_us.lang",
-    "matterList": "info/mobs-that-matter.txt"
+    "matterList": "info/mobs-that-matter.txt",
+    "overrides": "data/mob-overrides.json"
   },
   "mobCount": 80,
-  "resolvedMobCount": 79,
-  "unresolvedMobCount": 1,
-  "unresolvedMobIds": [
+  "resolvedMobCount": 80,
+  "unresolvedMobCount": 0,
+  "unresolvedMobIds": [],
+  "overriddenMobCount": 1,
+  "overriddenMobIds": [
     "srparasites:carrier_light"
   ],
-  "warnings": [
-    "srparasites:carrier_light: no config header/section found (config key tried: \"carrier_light\")"
-  ],
+  "warnings": [],
   "dimensionMultipliersEnabled": true,
   "dimensionHealthMultipliers": [
     {
@@ -405,18 +406,21 @@
     {
       "id": "srparasites:carrier_light",
       "name": "Light Carrier",
-      "baseHealth": null,
-      "healthMultiplier": null,
-      "enabled": null,
-      "statsResolved": false,
-      "unresolvedReason": "Missing config stats (tried section \"carrier_light\")",
-      "effectiveHealthMax": null,
+      "baseHealth": 30,
+      "healthMultiplier": 1,
+      "enabled": true,
+      "statsResolved": true,
+      "configSource": "data/mob-overrides.json (manual override (missing config section))",
+      "override": true,
+      "overrideReason": "manual override (missing config section)",
+      "overrideSource": "manual-override",
+      "effectiveHealthMax": 120,
       "effectiveHealthByDimension": {
-        "0": null,
-        "1": null,
-        "3": null,
-        "111": null,
-        "-1": null
+        "0": 45,
+        "1": 30,
+        "3": 90,
+        "111": 120,
+        "-1": 30
       }
     },
     {

@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "extract": "node scripts/extract-srp-data.mjs"
+    "extract": "node scripts/extract-srp-data.mjs",
+    "set-mob": "node scripts/set-mob-override.mjs"
   },
   "dependencies": {
     "wreq-js": "^3.2.0"
