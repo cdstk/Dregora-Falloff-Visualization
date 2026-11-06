@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>SRP Damage Falloff Lab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#mobTable">Skip to mob table</a>
+
+  <div class="page">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">RLCraft Dregora 1.1.2b <span>•</span> Scape and Run: Parasites</p>
+        <h1>Damage Falloff <span class="accent">Lab</span></h1>
+        <p class="lede">Expected mob health and hits-to-kill, before and after the player damage falloff handler.</p>
+        <div class="hero-tags" aria-label="Dataset summary">
+          <span class="tag tag-lime" id="heroMobCount">81 mobs</span>
+          <span class="tag">4× max dimension HP</span>
+          <span class="tag">per-mob HP multipliers stacked</span>
+          <span class="tag">player damage only</span>
+        </div>
+      </div>
+
+      <aside class="formula-card" aria-label="Damage falloff formula">
+        <p class="formula-kicker">Current handler</p>
+        <code><span class="code-key">divisor</span> = clamp(6/7 + damage/140, 1, 3)</code>
+        <code><span class="code-key">damage</span> = damage / divisor</code>
+        <p class="formula-note">Applied at <strong>LOWEST</strong> priority after other damage changes.</p>
+      </aside>
+    </header>
+
+    <section class="source-bar" aria-label="Data sources">
+      <span class="source-label">Source</span>
+      <code>SRParasitesMobs.cfg</code>
+      <span class="source-plus">+</span>
+      <code>srpmixins.cfg</code>
+      <span class="source-note">Only these two config files are parsed.</span>
+    </section>
+
+    <section class="panel controls" aria-label="Visualization controls">
+      <div class="control control-damage">
+        <div class="control-head">
+          <label for="damageSlider">Pre-falloff damage per hit</label>
+          <div class="damage-input-wrap">
+            <input id="damageNumber" type="number" min="1" max="1000" step="1" value="100" inputmode="numeric">
+            <span>dmg</span>
+          </div>
+        </div>
+        <input id="damageSlider" type="range" min="1" max="1000" step="1" value="100">
+        <div class="damage-scale" aria-hidden="true">
+          <span>1</span>
+          <span>20</span>
+          <span>100</span>
+          <span>300</span>
+          <span>1000</span>
+        </div>
+        <p class="control-note" id="damageNote">Damage at or below 20 is not reduced.</p>
+      </div>
+
+      <div class="control">
+        <label for="searchInput">Find a mob</label>
+        <input id="searchInput" type="search" placeholder="Name or id…" autocomplete="off">
+      </div>
+
+      <div class="control">
+        <label for="sortSelect">Sort by</label>
+        <select id="sortSelect">
+          <option value="effectiveHealthMax">Effective HP</option>
+          <option value="hitsAfter">Hits after falloff</option>
+          <option value="extraHits">Extra hits</option>
+          <option value="percentIncrease">% increase</option>
+          <option value="name">Name</option>
+          <option value="id">ID</option>
+          <option value="baseHealth">Base HP</option>
+          <option value="healthMultiplier">HP multiplier</option>
+        </select>
+        <button id="sortDirButton" class="ghost-button sort-dir" type="button" aria-label="Toggle sort direction">Descending</button>
+      </div>
+
+      <div class="control control-actions">
+        <span class="control-spacer" aria-hidden="true"></span>
+        <button id="resetButton" class="ghost-button" type="button">Reset</button>
+        <button id="exportButton" class="primary-button" type="button">Export CSV</button>
+      </div>
+    </section>
+
+    <section class="stat-grid" aria-label="Summary statistics">
+      <article class="stat-card">
+        <p class="stat-label">Selected damage</p>
+        <p class="stat-value" id="statDamage">100 → 63.6</p>
+        <p class="stat-sub" id="statDamageSub">36.4% reduction</p>
+      </article>
+      <article class="stat-card">
+        <p class="stat-label">Mobs shown</p>
+        <p class="stat-value" id="statMobs">81</p>
+        <p class="stat-sub" id="statMobsSub">of 81 configured</p>
+      </article>
+      <article class="stat-card">
+        <p class="stat-label">Effective HP range</p>
+        <p class="stat-value" id="statHpRange">20 – 2,000</p>
+        <p class="stat-sub">at 4× dimension multiplier</p>
+      </article>
+      <article class="stat-card stat-card-accent">
+        <p class="stat-label">Extra hits across shown mobs</p>
+        <p class="stat-value" id="statExtraHits">+0</p>
+        <p class="stat-sub" id="statExtraHitsSub">before → after falloff</p>
+      </article>
+    </section>
+
+    <section class="panel chart-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Falloff curve</h2>
+          <p class="panel-copy">Post-falloff damage and reduction at each pre-falloff damage value.</p>
+        </div>
+        <div class="segmented" role="group" aria-label="Chart metric">
+          <button class="segment is-active" type="button" data-metric="damage">Post-falloff damage</button>
+          <button class="segment" type="button" data-metric="reduction">Reduction %</button>
+        </div>
+      </div>
+      <div id="falloffChart" class="chart chart-falloff" role="img" aria-label="Damage falloff curve"></div>
+      <div class="chart-legend" aria-hidden="true">
+        <span class="legend-item"><span class="legend-line legend-line-curve"></span> current formula</span>
+        <span class="legend-item"><span class="legend-dot"></span> breakpoint</span>
+        <span class="legend-item"><span class="legend-line legend-line-selected"></span> selected damage</span>
+      </div>
+    </section>
+
+    <section class="panel table-panel" id="mobTable">
+      <div class="panel-head">
+        <div>
+          <h2>Mob health &amp; hits to kill</h2>
+          <p class="panel-copy" id="tableSummary">Loading mob data…</p>
+        </div>
+        <p class="panel-hint">Click a row for the HP breakdown</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" data-sort="name"><button class="th-button" type="button">Name</button></th>
+              <th scope="col" data-sort="id"><button class="th-button" type="button">ID</button></th>
+              <th scope="col" class="num" data-sort="baseHealth"><button class="th-button" type="button">Base HP</button></th>
+              <th scope="col" class="num" data-sort="healthMultiplier"><button class="th-button" type="button">HP ×</button></th>
+              <th scope="col" class="num" data-sort="effectiveHealthMax"><button class="th-button" type="button">Effective HP (4×)</button></th>
+              <th scope="col" class="num" data-sort="hitsBefore"><button class="th-button" type="button">Hits before</button></th>
+              <th scope="col" class="num" data-sort="hitsAfter"><button class="th-button" type="button">Hits after</button></th>
+              <th scope="col" class="num" data-sort="extraHits"><button class="th-button" type="button">Extra</button></th>
+              <th scope="col" class="num" data-sort="percentIncrease"><button class="th-button" type="button">% increase</button></th>
+            </tr>
+          </thead>
+          <tbody id="mobTableBody"></tbody>
+        </table>
+      </div>
+      <p class="empty-state" id="tableEmpty" hidden>No mobs match that search.</p>
+    </section>
+
+    <div class="two-column">
+      <section class="panel bar-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Biggest hit increases</h2>
+            <p class="panel-copy">Top mobs at the selected damage.</p>
+          </div>
+          <select id="barMetric" class="compact-select" aria-label="Bar chart metric">
+            <option value="extraHits">Extra hits</option>
+            <option value="hitsAfter">Hits after falloff</option>
+            <option value="effectiveHealthMax">Effective HP</option>
+          </select>
+        </div>
+        <div id="barChart" class="chart chart-bars" role="img" aria-label="Top mobs by extra hits"></div>
+      </section>
+
+      <section class="panel detail-panel" id="detailPanel" aria-live="polite">
+        <div class="detail-placeholder">
+          <p class="detail-kicker">Mob breakdown</p>
+          <h2>Select a mob</h2>
+          <p>Click any row in the table to see its health multipliers and hits-to-kill curve.</p>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <div>
+        <p><strong>Assumptions</strong></p>
+        <p>
+          Player-caused damage only. No armor, critical hits, regeneration, adaptation, damage caps, or other mods are modeled.
+          The damage input is the final hit damage before the falloff handler.
+        </p>
+      </div>
+      <div>
+        <p><strong>Dataset</strong></p>
+        <p id="footerMeta">Generated from SRParasitesMobs.cfg + srpmixins.cfg.</p>
+      </div>
+    </footer>
+  </div>
+
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+  <script src="data/srp-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

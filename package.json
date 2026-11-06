@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "extract": "node scripts/extract-srp-data.mjs"
+  },
+  "dependencies": {
+    "wreq-js": "^3.2.0"
+  }
+}
